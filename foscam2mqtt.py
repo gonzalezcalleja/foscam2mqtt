@@ -27,8 +27,8 @@ parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
 args = parser.parse_args()
 
-
 def print_devinfo(returncode, params):
+#    print 'print_devinfo'
     global lastMotionDetectAlarm
     global lastSoundAlarm
     global lastInfraLedState
@@ -36,6 +36,7 @@ def print_devinfo(returncode, params):
 
     if returncode != 0:
         print 'Failed to get DEVInfo!'
+        time.sleep(30)
         return
     
     data = {}
@@ -47,19 +48,19 @@ def print_devinfo(returncode, params):
     #print 'json_data %s' % (json_data)
     
     if any( [data['motionDetectAlarm'] != lastMotionDetectAlarm , data['soundAlarm'] != lastSoundAlarm, data['infraLedState'] != lastInfraLedState, (time.time() - lastTimePublish) > 10.0]):
-        client.publish("ipcamera/"+args.name, json_data, qos=0)
-        lastMotionDetectAlarm = data['motionDetectAlarm']
-        lastSoundAlarm = data['soundAlarm']
-        lastInfraLedState = data['infraLedState']
-        lastTimePublish = time.time()
+    	client.publish("ipcamera/"+args.name, json_data, qos=0)
+    	lastMotionDetectAlarm = data['motionDetectAlarm']
+    	lastSoundAlarm = data['soundAlarm']
+    	lastInfraLedState = data['infraLedState']
+    	lastTimePublish = time.time()
 
 client = paho.Client(client_id="", clean_session=True, userdata=None, protocol="MQTTv31")
 client.username_pw_set(args.mqttusername, args.mqttpassword)
 client.connect(args.mqtthost, 1883, 5)
 client.loop_start()
 
-mycam = FoscamCamera(args.host, args.port, args.username, args.password, daemon=False, verbose=args.verbose)
+mycam = FoscamCamera(args.host, args.port, args.username, args.password, daemon=True, verbose=args.verbose)
 
 while True:
-    mycam.get_dev_state(print_devinfo)
-
+   resultado = mycam.get_dev_state(print_devinfo)
+   time.sleep(1)
