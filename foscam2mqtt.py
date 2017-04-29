@@ -48,12 +48,10 @@ def print_devinfo(returncode, params):
     json_data = json.dumps(data)
 
     if changed or (time.time() - lastTimePublish) > 10:
-        (res, _) = client.publish("/ipcamera/"+args.name, json_data, qos=0)
+        (res, _) = client.publish("ipcamera/"+args.name, json_data, qos=0)
         lastTimePublish = time.time()
         if args.verbose:
-            print("Publish state")
-        client.publish("ipcamera/"+args.name, json_data, qos=0)
-        lastTimePublish = time.time()
+            print("Publish to mqtt: %s" % mqtt.error_string(res))
 
 
 def main():
