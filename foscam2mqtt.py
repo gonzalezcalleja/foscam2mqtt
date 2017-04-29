@@ -63,7 +63,7 @@ def main():
     client = mqtt.Client(client_id="", clean_session=True, userdata=None,
                          protocol=mqtt.MQTTv311)
     client.username_pw_set(args.mqttusername, args.mqttpassword)
-    client.connect(args.mqtthost, 1883, 5)
+    client.connect(args.mqtthost, args.mqttport, 5)
     client.loop_start()
 
     if args.verbose:
