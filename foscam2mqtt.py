@@ -29,13 +29,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def print_devinfo(returncode, params):
+def print_devinfo(params):
     global lastAttrValue, lastTimePublish
-
-    if returncode != FOSCAM_SUCCESS:
-        print("Failed to get camera info!")
-        time.sleep(30)
-        return
 
     data = {}
     changed = False
@@ -69,10 +64,15 @@ def main():
     if args.verbose:
         print("Init foscam..")
     mycam = FoscamCamera(args.host, args.port, args.username, args.password,
-                         daemon=True, verbose=args.verbose)
+                         daemon=False, verbose=args.verbose)
 
     while True:
-        mycam.get_dev_state(print_devinfo)
+        rc, params = mycam.get_dev_state()
+        if rc == FOSCAM_SUCCESS:
+            print_devinfo(params)
+        else:
+            print("Failed to get camera info: %d" % rc)
+            time.sleep(30)
         time.sleep(1)
 
 
